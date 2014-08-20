@@ -1,6 +1,6 @@
 #S3 Backup Script for Servers
 
-Backs up databases ending in _prod and _stage to S3
+Backs up databases ending in `%_prod` and `%_stage` to S3
 
 You will need to specify a file at the same level as `backup.sh` called `config.sh`; looks like this, adjust to your needs:
 
