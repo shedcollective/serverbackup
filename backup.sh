@@ -12,31 +12,10 @@ HOSTNAME=`hostname`
 
 # --------------------------------------------------------------------------
 
-echo "Starting production database backups on $HOSTNAME";
+echo "Starting database backups on $HOSTNAME";
 
 # MYSQL Dump
-for DB in $(mysql -e 'show databases like "%\_prod"' -s --skip-column-names); do
-
-    echo "Backing up '$DB'";
-
-    # Make Backup folder
-    mkdir -p "/$BACKUPPATH/backups/$DB/";
-
-    # Dumpy dump
-    mysqldump $DB > "/$BACKUPPATH/backups/$DB/$DATE.sql";
-
-    # Zip it up
-    tar -zcf "/$BACKUPPATH/backups/$DB/$DATE.sql.tar.gz" -C / "$BACKUPPATH/backups/$DB/$DATE.sql";
-    rm -f "/$BACKUPPATH/backups/$DB/$DATE.sql";
-
-done
-
-# --------------------------------------------------------------------------
-
-echo "Starting staging database backups on $HOSTNAME";
-
-# MYSQL Dump
-for DB in $(mysql -e 'show databases like "%\_stage"' -s --skip-column-names); do
+for DB in $(mysql -e "SHOW DATABASES WHERE \`Database\` REGEXP '$DBREGEX'" -s --skip-column-names); do
 
     echo "Backing up '$DB'";
 
