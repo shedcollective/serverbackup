@@ -1,6 +1,6 @@
 # S3 Backup Script for Servers
 
-Backs up databases ending in `%_prod` and `%_stage` to S3.
+Backs up databases matching a given Regular Expression to S3.
 
 ---
 
@@ -12,11 +12,14 @@ Backs up databases ending in `%_prod` and `%_stage` to S3.
 
 You will need to specify a file at the same level as `backup.sh` called `config.sh`; looks like this, adjust to your needs:
 
-	# Relative path; relative to /; no trailing slash
-	BACKUPPATH="root/my-server-backups"
-	
-	# Name of the S3 Bucket to save to
-	S3BUCKET="my-server-backups"
+    # Relative path; relative to /; no trailing slash
+    BACKUPPATH="root/my-server-backups"
+
+    # Name of the S3 Bucket to save to
+    S3BUCKET="my-server-backups"
+
+    # REGEX for database names to backup
+    DBREGEX=".*_prod$|.*_stage$"
 
 ### Dependancies
 
@@ -45,4 +48,4 @@ Set up Cron to execute the backup as often as you'd like. Something like `03 11,
 
 #### Roadmap
 
-1. Other database patterns/make chosen databases configurable.
+1. ~~Other database patterns/make chosen databases configurable.~~ (v1.1.0)
