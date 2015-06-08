@@ -20,11 +20,11 @@ You will need to specify a file at the same level as `backup.sh` called `config.
 
     # REGEX for database names to backup
     DBREGEX=".*_prod$|.*_stage$"
-    
-    #DB connection details
+
+    # DB connection details
     DBUSER="backup"
     DBPASS="my-password"
-    
+
 ### The MySQL User
 
 The following steps will create a mysql user named `backup` with password `my-password` which has the minimum amount of permissions required.
@@ -50,10 +50,8 @@ Additionally, `s3cmd` will need to be installed. To install:
 **1. For Debian (using apt-get)**
 
 1. `wget -O- -q http://s3tools.org/repo/deb-all/stable/s3tools.key | sudo apt-key add -`
-2. `sudo wget -O/etc/apt/sources.list.d/s3tools.list http://s3tools.org/repo/deb-all/stable/s3tools.list`
+2. `sudo wget -O /etc/apt/sources.list.d/s3tools.list http://s3tools.org/repo/deb-all/stable/s3tools.list`
 3. `sudo apt-get update && sudo apt-get install s3cmd`
-
-
 
 **2. Configure**
 
@@ -69,3 +67,4 @@ Set up Cron to execute the backup as often as you'd like. Something like `03 11,
 #### Roadmap
 
 1. ~~Other database patterns/make chosen databases configurable.~~ (v1.1.0)
+2. ~~Specify username and password.~~ (v2.1.0)
