@@ -20,6 +20,18 @@ You will need to specify a file at the same level as `backup.sh` called `config.
 
     # REGEX for database names to backup
     DBREGEX=".*_prod$|.*_stage$"
+    
+    #DB connection details
+    DBUSER="backup"
+    DBPASS="my-password"
+    
+### The MySQL User
+
+The following steps will create a mysql user named `backup` with password `my-password` which has the minimum amount of permissions required.
+
+1. `CREATE USER 'backup'@'localhost' IDENTIFIED BY 'my-password';`
+2. `GRANT SELECT, LOCK TABLES ON mysql.* TO 'backup'@'localhost';`
+3. `GRANT SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER ON *.* TO 'backup'@'localhost';`
 
 ### Dependancies
 
@@ -34,6 +46,14 @@ Additionally, `s3cmd` will need to be installed. To install:
 1. `cd /etc/yum.repos.d`
 2. `wget http://s3tools.org/repo/RHEL_6/s3tools.repo`
 3. `yum install s3cmd`
+
+**1. For Debian (using apt-get)**
+
+1. `wget -O- -q http://s3tools.org/repo/deb-all/stable/s3tools.key | sudo apt-key add -`
+2. `sudo wget -O/etc/apt/sources.list.d/s3tools.list http://s3tools.org/repo/deb-all/stable/s3tools.list`
+3. `sudo apt-get update && sudo apt-get install s3cmd`
+
+
 
 **2. Configure**
 

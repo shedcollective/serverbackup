@@ -1,8 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 # Include the config file
-CURDIR="$(dirname "$0")"
+CURDIR="$(pwd -P)"
 source "$CURDIR/config.sh";
+echo "config directory: $CURDIR/config.sh"
 
 # Date, used for file naming
 DATE=`date "+%Y%m%d%H%M"`
@@ -15,7 +16,7 @@ HOSTNAME=`hostname`
 echo "Starting database backups on $HOSTNAME";
 
 # MYSQL Dump
-for DB in $(mysql -e "SHOW DATABASES WHERE \`Database\` REGEXP '$DBREGEX'" -s --skip-column-names); do
+for DB in $(mysql --user="$DBUSER" --password="$DBPASS" -e "SHOW DATABASES WHERE \`Database\` REGEXP '$DBREGEX'" -s --skip-column-names); do
 
     echo "Backing up '$DB'";
 
@@ -23,7 +24,7 @@ for DB in $(mysql -e "SHOW DATABASES WHERE \`Database\` REGEXP '$DBREGEX'" -s --
     mkdir -p "/$BACKUPPATH/backups/$DB/";
 
     # Dumpy dump
-    mysqldump $DB > "/$BACKUPPATH/backups/$DB/$DATE.sql";
+    mysqldump --user="$DBUSER" --password="$DBPASS" $DB > "/$BACKUPPATH/backups/$DB/$DATE.sql";
 
     # Zip it up
     tar -zcf "/$BACKUPPATH/backups/$DB/$DATE.sql.tar.gz" -C / "$BACKUPPATH/backups/$DB/$DATE.sql";
@@ -47,3 +48,4 @@ rm -rf "/$BACKUPPATH/backups/";
 
 # CREATE LAST UPDATE FLAG
 echo "Last updated: $DATE" > "/$BACKUPPATH/lastrun.md"
+
