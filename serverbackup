@@ -2,8 +2,8 @@
 
 # Include the config file
 CURDIR="$(pwd -P)"
+echo "Using config: $CURDIR/config.sh"
 source "$CURDIR/config.sh";
-echo "config directory: $CURDIR/config.sh"
 
 # Date, used for file naming
 DATE=`date "+%Y%m%d%H%M"`
