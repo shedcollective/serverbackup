@@ -97,3 +97,4 @@ Set up Cron to execute the backup as often as you'd like. Something like `03 11,
 
 1. ~~Other database patterns/make chosen databases configurable.~~ (v1.1.0)
 2. ~~Specify username and password.~~ (v2.1.0)
+3. Implement a more secure way of storing the MySQL credentials.
