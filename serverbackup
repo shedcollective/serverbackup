@@ -8,44 +8,87 @@ source "$CURDIR/config.sh";
 # Date, used for file naming
 DATE=`date "+%Y%m%d%H%M"`
 
+# Make sure we're backing up something
+if [ "$BACKUPDB" != true ] && [ "$BACKUPDIR" != true ]; then
+
+    echo "Nothing to back up";
+    exit 0;
+
+fi
+
 # Server Hostname
 HOSTNAME=`hostname`
 
+# Backup DBs
+if [ "$BACKUPDB" = true ]; then
+
+    # --------------------------------------------------------------------------
+
+    echo "Starting database backups on $HOSTNAME";
+    mkdir -p "/$BACKUPPATH/db/";
+
+    # MYSQL Dump
+    for DB in $(mysql --user="$DBUSER" --password="$DBPASS" -e "SHOW DATABASES WHERE \`Database\` REGEXP '$DBREGEX'" -s --skip-column-names); do
+
+        echo "Backing up '$DB'";
+
+        # Make Backup folder
+        mkdir -p "/$BACKUPPATH/db/$DB/";
+
+        # Dumpy dump
+        mysqldump --user="$DBUSER" --password="$DBPASS" $DB > "/$BACKUPPATH/db/$DB/$DATE.sql";
+
+        # Zip it up
+        tar -zcf "/$BACKUPPATH/db/$DB/$DATE.sql.tar.gz" -C / "$BACKUPPATH/db/$DB/$DATE.sql";
+        rm -f "/$BACKUPPATH/db/$DB/$DATE.sql";
+
+    done
+fi
+
 # --------------------------------------------------------------------------
 
-echo "Starting database backups on $HOSTNAME";
+if [ "$BACKUPDIR" = true ]; then
 
-# MYSQL Dump
-for DB in $(mysql --user="$DBUSER" --password="$DBPASS" -e "SHOW DATABASES WHERE \`Database\` REGEXP '$DBREGEX'" -s --skip-column-names); do
+    echo "Starting directory backups on $HOSTNAME";
+    mkdir -p "/$BACKUPPATH/dir/";
 
-    echo "Backing up '$DB'";
+    for i in "${BACKUPDIRS[@]}"
+    do
+        echo "Archiving $i"
+        tar rf "/$BACKUPPATH/dir/$DATE.tar" -C / "$i"
+    done
 
-    # Make Backup folder
-    mkdir -p "/$BACKUPPATH/backups/$DB/";
-
-    # Dumpy dump
-    mysqldump --user="$DBUSER" --password="$DBPASS" $DB > "/$BACKUPPATH/backups/$DB/$DATE.sql";
-
-    # Zip it up
-    tar -zcf "/$BACKUPPATH/backups/$DB/$DATE.sql.tar.gz" -C / "$BACKUPPATH/backups/$DB/$DATE.sql";
-    rm -f "/$BACKUPPATH/backups/$DB/$DATE.sql";
-
-done
+    echo "Compressing archive"
+    gzip "/$BACKUPPATH/dir/$DATE.tar"
+fi
 
 # --------------------------------------------------------------------------
 
 # Send backups offsite
 echo "Syncing to S3"
-s3cmd sync --skip-existing "/$BACKUPPATH/backups/" "s3://$S3BUCKET/$HOSTNAME/"
+s3cmd sync --skip-existing "/$BACKUPPATH/" "s3://$S3BUCKET/$HOSTNAME/"
 
 # --------------------------------------------------------------------------
 
 # Delete backup files
 echo "Deleting local backups";
-rm -rf "/$BACKUPPATH/backups/";
+rm -rf "/$BACKUPPATH/"
 
 # --------------------------------------------------------------------------
 
 # CREATE LAST UPDATE FLAG
-echo "Last updated: $DATE" > "/$BACKUPPATH/lastrun.md"
+echo "Last updated: $DATE" > "./lastrun.md"
 
+# --------------------------------------------------------------------------
+
+# Blank all the variables out
+BACKUPDB=""
+BACKUPDIR=""
+CURDIR=""
+DATE=""
+HOSTNAME=""
+BACKUPPATH=""
+S3BUCKET=""
+DBREGEX=""
+DBUSER=""
+DBPASS=""
