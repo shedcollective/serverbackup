@@ -17,7 +17,7 @@ You will need to specify a file at the same level as `backup.sh` called `config.
 
 
     # Turn on DB Backup
-    BACKUPDB=false
+    BACKUPDB=true
 
     # Turn on Directory Backup
     BACKUPDIR=true
