@@ -1,21 +1,32 @@
 # S3 Backup Script for Servers
 
-Backs up databases matching a given Regular Expression to S3.
+Backs up databases matching a given Regular Expression, and/or pre-defined directories to S3.
 
 ---
 
-**This is an internal tool for Shed Collective. No warranties are given or implied and you use at your own risk!**
+	This is an internal tool for Shed Collective.
+	No warranties are given or implied and you use at your own risk!
 
 ---
 
-### Configuration
+
+
+## Configuration
 
 You will need to specify a file at the same level as `backup.sh` called `config.sh`; looks like this, adjust to your needs:
 
+
+    # Turn on DB Backup
+    BACKUPDB=false
+
+    # Turn on Directory Backup
+    BACKUPDIR=true
+
+	# Where to temporarily store backups locally
     # Relative path; relative to /; no trailing slash
     BACKUPPATH="root/my-server-backups"
 
-    # Name of the S3 Bucket to save to
+    # Name of the S3 Bucket to upload to
     S3BUCKET="my-server-backups"
 
     # REGEX for database names to backup
@@ -25,15 +36,14 @@ You will need to specify a file at the same level as `backup.sh` called `config.
     DBUSER="backup"
     DBPASS="my-password"
 
-### The MySQL User
+    # Backup the following directories
+    # Declare as an array; Relative path; relative to /; no trailing slash
+    BACKUPDIRS[0]="root/my-website-dir"
+    BACKUPDIRS[1]="root/another-website-dir"
 
-The following steps will create a mysql user named `backup` with password `my-password` which has the minimum amount of permissions required.
 
-1. `CREATE USER 'backup'@'localhost' IDENTIFIED BY 'my-password';`
-2. `GRANT SELECT, LOCK TABLES ON mysql.* TO 'backup'@'localhost';`
-3. `GRANT SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER ON *.* TO 'backup'@'localhost';`
 
-### Dependancies
+## Dependancies
 
 Additionally, `s3cmd` will need to be installed. To install:
 
@@ -57,7 +67,26 @@ Additionally, `s3cmd` will need to be installed. To install:
 
 1. `s3cmd --configure` and follow the on-screen instructions.
 
-### Backing up
+
+
+## Database Backups
+
+If required, turn database backups on by setting `BACKUPDB` to `true` in your config.
+
+### The MySQL User
+
+The following steps will create a MySQL user named `backup` with password `my-password` which has the minimum amount of permissions required.
+
+1. `CREATE USER 'backup'@'localhost' IDENTIFIED BY 'my-password';`
+2. `GRANT SELECT, LOCK TABLES ON mysql.* TO 'backup'@'localhost';`
+3. `GRANT SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER ON *.* TO 'backup'@'localhost';`
+
+## Directory Backups
+
+If required, turn directory backups on by setting `BACKUPDIR` to `true` in your config.
+
+
+## Backing up
 
 Set up Cron to execute the backup as often as you'd like. Something like `03 11,16 * * * /root/shedbackups/backup.sh` should do the trick.
 
