@@ -88,7 +88,7 @@ If required, turn directory backups on by setting `BACKUPDIR` to `true` in your 
 
 ## Backing up
 
-Set up Cron to execute the backup as often as you'd like. Something like `03 11,16 * * * /root/shedbackups/backup.sh` should do the trick.
+Set up Cron to execute the backup as often as you'd like. Something like `03 03 * * * /backups/serverbackup` should do the trick.
 
 
 ---
@@ -98,3 +98,8 @@ Set up Cron to execute the backup as often as you'd like. Something like `03 11,
 1. ~~Other database patterns/make chosen databases configurable.~~ (v1.1.0)
 2. ~~Specify username and password.~~ (v2.1.0)
 3. Implement a more secure way of storing the MySQL credentials.
+4. Better logging.
+  1. Show the size of the folder we’re about to archive
+  2. Time stamp each line
+5. Exclude certain paths (e.g caches and logs)
+6. Backup directories and databases individually and push/purge as we go (basically reduce the amount of data on the server at any one time)
