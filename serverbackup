@@ -36,7 +36,7 @@ if [ "$BACKUPDB" = true ]; then
         mkdir -p "/$BACKUPPATH/db/$DB/";
 
         # Dumpy dump
-        mysqldump --user="$DBUSER" --password="$DBPASS" $DB > "/$BACKUPPATH/db/$DB/$DATE.sql";
+        mysqldump --single-transaction --user="$DBUSER" --password="$DBPASS" $DB > "/$BACKUPPATH/db/$DB/$DATE.sql";
 
         # Zip it up
         tar -zcf "/$BACKUPPATH/db/$DB/$DATE.sql.tar.gz" -C / "$BACKUPPATH/db/$DB/$DATE.sql";
