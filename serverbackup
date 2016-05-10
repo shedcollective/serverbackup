@@ -3,6 +3,15 @@
 # Include the config file
 CURDIR="$(pwd -P)"
 echo "Using config: $CURDIR/config.sh"
+
+if [ ! -f "$CURDIR/config.sh" ]
+    then
+
+    echo "Missing config.sh";
+    echo "Expected at path: $CURDIR/config.sh";
+    exit 0;
+fi
+
 source "$CURDIR/config.sh";
 
 # Date, used for file naming
@@ -36,7 +45,7 @@ if [ "$BACKUPDB" = true ]; then
         mkdir -p "/$BACKUPPATH/db/$DB/";
 
         # Dumpy dump
-        mysqldump --single-transaction --user="$DBUSER" --password="$DBPASS" $DB > "/$BACKUPPATH/db/$DB/$DATE.sql";
+        mysqldump --single-transaction --default-character-set=utf8 --hex-blob --user="$DBUSER" --password="$DBPASS" -r "/$BACKUPPATH/db/$DB/$DATE.sql" $DB;
 
         # Zip it up
         tar -zcf "/$BACKUPPATH/db/$DB/$DATE.sql.tar.gz" -C / "$BACKUPPATH/db/$DB/$DATE.sql";
