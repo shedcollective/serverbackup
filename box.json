@@ -1,0 +1,6 @@
+{
+    "files": ["src/ServerBackup.php"],
+    "main": "bin/main",
+    "output": "dist/serverbackup.phar",
+    "stub": true
+}

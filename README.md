@@ -10,96 +10,86 @@ Backs up databases matching a given Regular Expression, and/or pre-defined direc
 ---
 
 
+## Installation
+@todo - distribute via apt-get, yum, linux-brew etc if possible
+
 
 ## Configuration
 
-You will need to specify a file at the same level as `backup.sh` called `config.sh`; looks like this, adjust to your needs:
+Place a file at `~/.serverbackuprc` with the configuration array you wish to use, as a JSON object.
 
+Defaults:
 
-    # Turn on DB Backup
-    BACKUPDB=true
+```json
+{
+    'database': {
+        'enabled': false
+        'pattern': '^(information_schema|mysql|performance_schema|test)',
+        'host': '',
+        'user': '',
+        'pass': ''
+    },
+    'filesystem': {
+        'enabled': false,
+        'targets': []
+    },
+    's3': {
+        'bucket': '',
+        'prefix': '',
+        'suffix': '',
+        'access_key': '',
+        'access_secret': ''
+    },
+    'hostname': '',
+    'temp_dir': '/tmp/serverbackup',
+    'retainment': 5
+}
+```
 
-    # Turn on Directory Backup
-    BACKUPDIR=true
-
-	# Where to temporarily store backups locally
-    # Relative path; relative to /; no trailing slash
-    BACKUPPATH="root/my-server-backups"
-
-    # Name of the S3 Bucket to upload to
-    S3BUCKET="my-server-backups"
-
-    # REGEX for database names to backup
-    DBREGEX=".*_prod$|.*_stage$"
-
-    # DB connection details
-    DBUSER="backup"
-    DBPASS="my-password"
-
-    # Backup the following directories
-    # Declare as an array; Relative path; relative to /; no trailing slash
-    BACKUPDIRS[0]="root/my-website-dir"
-    BACKUPDIRS[1]="root/another-website-dir"
-
-
-
-## Dependancies
-
-Additionally, `s3cmd` will need to be installed. To install:
-
-**1. For OSX (using homebrew)**
-
-1. `brew install s3cmd`
-
-**1. For CentOS (using yum)**
-
-1. `cd /etc/yum.repos.d`
-2. `wget http://s3tools.org/repo/RHEL_6/s3tools.repo`
-3. `yum install s3cmd`
-
-**1. For Debian (using apt-get)**
-
-1. `wget -O- -q http://s3tools.org/repo/deb-all/stable/s3tools.key | sudo apt-key add -`
-2. `sudo wget -O /etc/apt/sources.list.d/s3tools.list http://s3tools.org/repo/deb-all/stable/s3tools.list`
-3. `sudo apt-get update && sudo apt-get install s3cmd`
-
-**2. Configure**
-
-1. `s3cmd --configure` and follow the on-screen instructions.
-
-
-
-## Database Backups
-
-If required, turn database backups on by setting `BACKUPDB` to `true` in your config.
 
 ### The MySQL User
 
-The following steps will create a MySQL user named `backup` with password `my-password` which has the minimum amount of permissions required.
+It is recommended that backups are performed by a user with the minimal required permissions. The following steps will create a MySQL user named `backup` with password `my-password` which has the minimum amount of permissions required.
 
 1. `CREATE USER 'backup'@'localhost' IDENTIFIED BY 'my-password';`
 2. `GRANT SELECT, LOCK TABLES ON mysql.* TO 'backup'@'localhost';`
 3. `GRANT SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER ON *.* TO 'backup'@'localhost';`
 
-## Directory Backups
-
-If required, turn directory backups on by setting `BACKUPDIR` to `true` in your config.
-
 
 ## Backing up
 
-Set up Cron to execute the backup as often as you'd like. Something like `03 03 * * * /backups/serverbackup` should do the trick.
+Set up Cron to execute the backup as often as you'd like. Something like `03 03 * * * serverbackup backup` should do the trick; or, of course, run it manually whenever you want.
 
+
+## Options
+
+The following commands are available to you:
+
+- `backup` - Performs a complete backup using the options found at `~/.serverbackuprc`
+- `test`   - Tests backup integrity for the latest backups found at the target defined by `~/.serverbackuprc`
+
+
+## Compiling
+
+This project uses [box](https://github.com/box-project/box2) to build the PHAR.
+
+```bash
+$ ./build.sh
+```
+
+A new file called `dist/serverbackup.phar` will be available.
 
 ---
 
 #### Roadmap
 
-1. ~~Other database patterns/make chosen databases configurable.~~ (v1.1.0)
-2. ~~Specify username and password.~~ (v2.1.0)
-3. Implement a more secure way of storing the MySQL credentials.
-4. Better logging.
-  1. Show the size of the folder we’re about to archive
-  2. Time stamp each line
-5. Exclude certain paths (e.g caches and logs)
-6. Backup directories and databases individually and push/purge as we go (basically reduce the amount of data on the server at any one time)
+- [x] ~~Other database patterns/make chosen databases configurable.~~ (v1.1.0)
+- [x] ~~Specify username and password.~~ (v2.1.0)
+- [ ] Implement a more secure way of storing the MySQL credentials.
+- [ ] Better logging.
+  - [ ] Show the size of the folder we’re about to archive
+  - [ ] Time stamp each line
+- [ ] Exclude certain paths (e.g caches and logs)
+- [ ] Backup directories and databases individually and push/purge as we go (basically reduce the amount of data on the server at any one time)
+- [ ] Test integrity of backups
+- [ ] Restore backups
