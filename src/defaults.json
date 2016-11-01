@@ -1,0 +1,9 @@
+{
+  "sets": [
+    {
+      "driver": "s3",
+      "databases": [],
+      "directories": []
+    }
+  ]
+}

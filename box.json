@@ -1,6 +1,7 @@
 {
-    "files": ["src/ServerBackup.php"],
-    "main": "bin/main",
-    "output": "dist/serverbackup.phar",
-    "stub": true
+  "directories": ["src"],
+  "chmod": "0755",
+  "main": "bin/main",
+  "output": "dist/serverbackup.phar",
+  "stub": true
 }
