@@ -105,8 +105,8 @@ class App
         $aArgs = array_map('trim', $aArgs);
 
         foreach ($aArgs as $sArg) {
-            if (preg_match('/^--(.*)(="?(.*)"?)$/', $sArg, $aMatches)) {
-                $this->aArguments[$aMatches[1]] = $aMatches[3];
+            if (preg_match('/^--(.*)(="?(.*)"?)?$/', $sArg, $aMatches)) {
+                $this->aArguments[$aMatches[1]] = !empty($aMatches[3]) ? $aMatches[3] : true;
             } else {
                 $this->aCommands[] = $sArg;
             }
@@ -184,7 +184,7 @@ class App
      * @param integer $iIndex The index of the command to get
      * @return mixed|null
      */
-    private function command($iIndex = 0)
+    public function command($iIndex = 0)
     {
         return array_key_exists($iIndex, $this->aCommands) ? strtolower($this->aCommands[$iIndex]) : null;
     }

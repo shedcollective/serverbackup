@@ -23,6 +23,7 @@ class Config extends Base {
 
         //  A bit of colouring
         //  Strings
+        $sConfig = preg_replace('/"(.*?)": "(.*?)"/', '"<comment>$1</comment>": "<comment>$2</comment>"', $sConfig);
         $sConfig = preg_replace('/"([a-zA-Z_].*?)"/', '"<comment>$1</comment>"', $sConfig);
 
         //  Integers

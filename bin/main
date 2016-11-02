@@ -22,5 +22,18 @@ spl_autoload_register(function ($sClassName) {
     }
 });
 
-$oApp = new ServerBackup\App($argv);
-$oApp->go();
+try {
+
+    $oApp = new ServerBackup\App($argv);
+    $oApp->go();
+
+} catch (\Exception $e) {
+
+    $oColors = new ServerBackup\Helper\Output\Colors();
+    echo "\n" . $oColors->getColoredString('EXCEPTION:', 'black', 'red');
+    echo "\n" . $oColors->getColoredString('Code:    ' . $e->getCode(), 'black', 'red');
+    echo "\n" . $oColors->getColoredString('Message: ' . $e->getMessage(), 'black', 'red');
+    echo "\n" . $oColors->getColoredString('File:    ' . $e->getFile(), 'black', 'red');
+    echo "\n" . $oColors->getColoredString('Line:    ' . $e->getLine(), 'black', 'red');
+    echo "\n\n";
+}

@@ -1,9 +1,31 @@
 {
-  "sets": [
-    {
-      "driver": "s3",
-      "databases": [],
-      "directories": []
-    }
-  ]
+    "database": {
+        "pattern": {
+            "include": ".*",
+            "exclude": "information_schema|mysql|performance_schema|test|sys"
+        },
+        "host": "localhost",
+        "user": "",
+        "pass": ""
+    },
+    "filesystem": {
+        "targets": []
+    },
+    "s3": {
+        "bucket": "",
+        "prefix": "",
+        "suffix": "",
+        "access_key": "",
+        "access_secret": ""
+    },
+    "google": {
+        "bucket": "",
+        "prefix": "",
+        "suffix": "",
+        "access_key": "",
+        "access_secret": ""
+    },
+    "hostname": "",
+    "temp_dir": "/tmp/serverbackup",
+    "retainment": 5
 }
